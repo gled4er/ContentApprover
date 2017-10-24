@@ -5,10 +5,10 @@ var moment = require('moment');
 module.exports = function (context, rejectedReview) {
 if (rejectedReview && rejectedReview.id && rejectedReview.company && rejectedReview.description && rejectedReview.image_url && rejectedReview.name && rejectedReview.state && rejectedReview.rejectionReason) {
    var eventGridEvents =  [{
-        "id": uuidv4(), // use uuid
+        "id": uuidv4(),
         "eventType": "recordInserted",
         "subject": "car/review/rejected",
-        "eventTime": moment().format(), //"2017-10-20T10:10:15Z", //get the current date  
+        "eventTime": moment().format(),
         "data": rejectedReview
     }];
    

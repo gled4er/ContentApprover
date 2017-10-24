@@ -1,8 +1,9 @@
 var request = require('request-promise');
 
 module.exports = function (context, carReviewTextChecked) {
-
-if (carReviewTextChecked && (!carReviewTextChecked.imageApproval || carReviewTextChecked.imageApproval != "complete")) {
+if (carReviewTextChecked && (!carReviewTextChecked.imageApproval ||  carReviewTextChecked.imageApproval  != "complete")) {
+   
+   context.log(carReviewTextChecked.image_url);
     var options = {
         uri: process.env["VisionApiUrl"],
         method: 'POST',
@@ -20,19 +21,14 @@ if (carReviewTextChecked && (!carReviewTextChecked.imageApproval || carReviewTex
     request(options)
     .then(function (parsedBody) {
         var tags = parsedBody.description.tags;
-        context.log(parsedBody);
-        // TBD move "car" to settings 
+        carReviewTextChecked.imageApproval = "complete";
         if(tags.indexOf("car") > -1){
-        context.log("Item content is appropriate");
-        } else {
-            context.log(false);
-            carReviewTextChecked.state = "rejected";
-            carReviewTextChecked.imageApproval = "complete";
-            // Update Cosmos DB record
-            context.log(carReviewTextChecked);
+            carReviewTextChecked.state = "approved";
             context.bindings.outputDocument = carReviewTextChecked;
-
-             var rejectionEvent = {
+        } else {
+            carReviewTextChecked.state = "rejected";
+            context.bindings.outputDocument = carReviewTextChecked;
+            var rejectionEvent = {
                 id: carReviewTextChecked.id,
                 company: carReviewTextChecked.company,
                 description: carReviewTextChecked.description,
@@ -41,12 +37,9 @@ if (carReviewTextChecked && (!carReviewTextChecked.imageApproval || carReviewTex
                 state: carReviewTextChecked.state,
                 rejectionReason: "car is not on the image"
             };
-
-            // Send an event to Event Grid
             context.bindings.rejectedReviewEvent = rejectionEvent;
-
-            context.done();
         }
+        context.done();
     })
     .catch(function (err) {
        context.log(err);
@@ -56,8 +49,8 @@ if (carReviewTextChecked && (!carReviewTextChecked.imageApproval || carReviewTex
     }
     else {
 
-        if(!carReviewTextChecked.imageApproval || carReviewTextChecked.imageApproval != "complete") {
-            throw "Please pass an image url and term for verification in the request body";
+        if(!carReviewTextChecked.imageApproval ||  carReviewTextChecked.imageApproval  != "complete") {
+            throw "Please pass an image url for verification in the request body";
         }
         context.done();
     }

@@ -4,10 +4,10 @@
       "type": "cosmosDBTrigger",
       "name": "input",
       "direction": "in",
-      "leaseCollectionName": "leasescore",
+      "leaseCollectionName": "leases",
       "connectionStringSetting": "CosmosDbConnectionString",
       "databaseName": "cardb",
-      "collectionName": "carcore",
+      "collectionName": "car",
       "createLeaseCollectionIfNotExists": true
     },
     {

@@ -18,7 +18,7 @@
       "type": "documentDB",
       "name": "outputDocument",
       "databaseName": "cardb",
-      "collectionName": "carcore",
+      "collectionName": "car",
       "createIfNotExists": false,
       "partitionKey": "/company",
       "connection": "CosmosDbConnectionString",
